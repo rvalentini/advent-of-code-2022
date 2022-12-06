@@ -60,7 +60,6 @@
           final-cargo-9001 (process-cargo cargo commands apply-command-9001)
           get-tops #(reduce str (map first (vals (sort-by key (doall %)))))]
 
-      (def cargo cargo)
       (println "Final top cargo for 9000 crane: " (get-tops final-cargo-9000))
       (println "Final top cargo for 9001 crane: " (get-tops final-cargo-9001))))
 
