@@ -4,7 +4,12 @@
   (vec (re-seq #"[A-Za-z]+" str)))
 
 (defn all-numbers [str]
-  (mapv parse-long (re-seq #"[1-9]+" str)))
+  (mapv parse-long (re-seq #"-?[0-9]+" str)))
+
+(assert (= (all-numbers "blah -333") [-333]))
+(assert (= (all-numbers "blah -8 5 0 something -22 else  111") [-8 5 0 -22 111]))
+(assert (= (all-numbers "blah -10") [-10]))
+(assert (= (all-numbers "-1u0m22-1") [-1 0 22 -1]))
 
 (defn first-index-of [p xs]
   (->> xs
