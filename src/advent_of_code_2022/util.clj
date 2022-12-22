@@ -6,6 +6,9 @@
 (defn all-numbers [str]
   (mapv parse-long (re-seq #"-?[0-9]+" str)))
 
+(defn str->number [str]
+  (if (re-find #"\d" str)(parse-long str) str))
+
 (defn first-index-of [p xs]
   (->> xs
     (keep-indexed (fn [i x] (when (p x) i)))
@@ -30,6 +33,21 @@
                   (for [x (range 0 x-dim)]
                     (init-fn x y))))))
 
+(defn get-pos [matrix [x y]]
+  ;(println "get-pos called with" matrix x y)
+  (get-in matrix [y x]))
+
+(defn sub-matrix [{:keys [upper-left-pos x-dim y-dim matrix]}]
+  (let [[x y] upper-left-pos]
+    (vec (map vec (for [y (range y (+ y y-dim))]
+                    (for [x (range x (+ x x-dim))]
+                      (get-pos matrix [x y])))))))
+
+(defn outside-matrix? [[x y] matrix]
+  (let [width (count (first matrix))
+        height (count matrix)]
+    (or (neg? x) (>= x width) (neg? y) (>= y height))))
+
 (defn mark-at-pos [matrix i [x y]]
   (assoc-in matrix [y x] i))
 
@@ -38,6 +56,13 @@
 
 (defn mark-column [matrix i col]
   (map (fn [r] (map-indexed (fn [idx c] (if (= idx col) i c)) r)) matrix))
+
+(defn move [[x y] direction]
+  (case direction
+    :up [x (dec y)]
+    :right [(inc x) y]
+    :down [x (inc y)]
+    :left [(dec x ) y]))
 
 (def ^:private inf Double/POSITIVE_INFINITY)
 
@@ -107,3 +132,9 @@
 
 (assert (= '([1 0] [1 2] [0 1] [0 0] [0 2] [2 1] [2 0] [2 2])
           (neighbors-with-corners [1 1])))
+
+(assert (= (sub-matrix {:upper-left-pos [3 3] :x-dim 3 :y-dim 3 :matrix (build-matrix {:x-dim 10 :y-dim 10 :init-fn #(identity (str %1 %2))})})
+          [["33" "43" "53"] ["34" "44" "54"] ["35" "45" "55"]]))
+
+(assert (= (outside-matrix? [3 4] (build-matrix {:x-dim 4 :y-dim 4 :init-fn (constantly ".")})) true))
+(assert (= (outside-matrix? [3 3] (build-matrix {:x-dim 4 :y-dim 4 :init-fn (constantly ".")})) false))
