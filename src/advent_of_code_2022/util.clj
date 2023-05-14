@@ -6,6 +6,9 @@
 (defn all-numbers [str]
   (mapv parse-long (re-seq #"-?[0-9]+" str)))
 
+(defn all-non-alphanumeric [str]
+  (vec (re-seq #"[^a-zA-Z\d\s]" str)))
+
 (defn str->number [str]
   (if (re-find #"\d" str)(parse-long str) str))
 
