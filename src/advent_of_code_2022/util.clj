@@ -51,6 +51,10 @@
         height (count matrix)]
     (or (neg? x) (>= x width) (neg? y) (>= y height))))
 
+(defn lines->matrix [lines]
+  (vec (for [y (range 0 (count lines))]
+         (mapv str (nth lines y)))))
+
 (defn mark-at-pos [matrix i [x y]]
   (assoc-in matrix [y x] i))
 
