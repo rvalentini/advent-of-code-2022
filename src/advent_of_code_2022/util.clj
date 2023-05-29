@@ -46,6 +46,25 @@
                     (for [x (range x (+ x x-dim))]
                       (get-pos matrix [x y])))))))
 
+(defn transpose [matrix]
+  (vec (for [i (range 0 (count (first matrix)))]
+         (mapv (fn [row] (nth row i)) matrix))))
+
+(defn delete-column-cond [matrix f]
+  (transpose (vec (filter #(not (f %)) (transpose matrix)))))
+
+(defn delete-row-cond [matrix f]
+  (vec (filter #(not (f %)) matrix)))
+
+;TODO add append prepend columns
+(defn prepend-rows [matrix n i]
+  (let [length (count (first matrix))]
+    (into (vec (for [_ (range 0 n)] (vec (repeat length i)))) matrix)))
+
+(defn append-rows [matrix n i]
+  (let [length (count (first matrix))]
+    (into matrix (vec (for [_ (range 0 n)] (vec (repeat length i)))))))
+
 (defn outside-matrix? [[x y] matrix]
   (let [width (count (first matrix))
         height (count matrix)]
@@ -70,6 +89,15 @@
     :right [(inc x) y]
     :down [x (inc y)]
     :left [(dec x ) y]))
+
+(defn expand [matrix n]
+  (-> matrix
+    (prepend-rows n ".")
+    (append-rows n ".")
+    (transpose)
+    (prepend-rows n ".")
+    (append-rows n ".")
+    (transpose)))
 
 (def ^:private inf Double/POSITIVE_INFINITY)
 
