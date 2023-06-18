@@ -22,6 +22,13 @@
     x
     (recur xs)))
 
+(defn drop-first [pred s]
+  (loop [checked []
+         [x & xs] s]
+    (if (pred x)
+      (concat checked xs)
+      (recur (conj checked x) xs))))
+
 (defn neighbors [[x y]]
   (list [(dec x) y] [(inc x) y] [x (dec y)] [x (inc y)]))
 
@@ -143,6 +150,8 @@
 (assert (= (all-numbers "blah -8 5 0 something -22 else  111") [-8 5 0 -22 111]))
 (assert (= (all-numbers "blah -10") [-10]))
 (assert (= (all-numbers "-1u0m22-1") [-1 0 22 -1]))
+
+(assert (= (drop-first even? '(1 3 9 111 5 4 3 4 1 8 9 0 89)) '(1 3 9 111 5 3 4 1 8 9 0 89)))
 
 (assert (= (count (flatten (build-matrix {:x-dim 20 :y-dim 5 :init-fn (constantly ".")}))) 100 ))
 ;sum of first 100 numbers
